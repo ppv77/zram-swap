@@ -1,0 +1,34 @@
+#!/sbin/runscript
+# Copyright 1999-2006 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/sys-fs/mdadm/files/mdadm.rc,v 1.2 2006/04/25 05:41:51 vapier Exp $
+
+
+start() {
+	ebegin "Starting zram swap"
+	cpus=$(grep -c process /proc/cpuinfo)
+	mem=$(grep MemT /proc/meminfo | awk '{print($2)}')
+	mem=$(($mem*1024))
+	modprobe zram
+	sleep 1
+	limit=$(($mem/2))
+	echo $cpus >/sys/block/zram0/max_comp_streams
+	echo $mem >/sys/block/zram0/disksize
+	echo $limit >/sys/block/zram0/mem_limit
+	mkswap /dev/zram0
+	swapon -p 10 /dev/zram0
+	echo 100 > /proc/sys/vm/swappiness
+	eend 0
+}
+
+stop() {
+	ebegin "Stopping zram swap"
+	cpus=$(grep -c process /proc/cpuinfo)
+	swapoff /dev/zram0
+	echo 1 >/sys/block/zram0/reset 
+	echo 30 > /proc/sys/vm/swappiness
+	sleep 1
+	rmmod zram
+	eend 0
+}
+
