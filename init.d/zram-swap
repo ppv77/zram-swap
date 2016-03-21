@@ -13,8 +13,8 @@ start() {
 	sleep 1
 	limit=$(($mem/2))
 	echo $cpus >/sys/block/zram0/max_comp_streams
-	echo $mem >/sys/block/zram0/disksize
-	echo $limit >/sys/block/zram0/mem_limit
+	echo $limit >/sys/block/zram0/disksize
+#	echo $limit >/sys/block/zram0/mem_limit
 	mkswap /dev/zram0
 	swapon -p 10 /dev/zram0
 	echo 100 > /proc/sys/vm/swappiness
