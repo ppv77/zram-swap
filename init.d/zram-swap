@@ -21,11 +21,14 @@ start() {
 
 stop() {
 	ebegin "Stopping zram swap"
-	swapoff /dev/zram0
-	echo 1 >/sys/block/zram0/reset 
+	swapoff /dev/zram0 || {
+	    eerror "No free RAM"
+	    eend 1
+	}
+	echo 1 >/sys/block/zram0/reset
 	echo 30 > /proc/sys/vm/swappiness
 	sleep 1
-#	rmmod zram
+	rmmod zram
 	eend 0
 }
 
