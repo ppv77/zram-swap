@@ -2,6 +2,10 @@
 # Copyright 1999-2006 
 # $Id$
 
+depend() {
+	need localmount
+	after modules
+}
 
 start() {
 	ebegin "Starting zram swap"
