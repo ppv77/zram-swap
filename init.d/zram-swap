@@ -12,7 +12,10 @@ start() {
 	cpus=$(grep -c process /proc/cpuinfo)
 	mem=$(grep MemT /proc/meminfo | awk '{print($2)}')
 	mem=$(($mem*1024/2))
-	modprobe zram
+	modprobe zram || {
+	    eerror "No module"
+	    eenmd 1
+	}
 	sleep 1
 	echo $cpus >/sys/block/zram0/max_comp_streams
 	echo $mem >/sys/block/zram0/disksize
